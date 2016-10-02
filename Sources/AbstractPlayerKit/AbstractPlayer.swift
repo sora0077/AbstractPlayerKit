@@ -9,27 +9,23 @@
 import Foundation
 import AVKit
 import AVFoundation
+import RxSwift
 
 
-public protocol TrackWorker: Worker {
-    typealias Response = URL
-}
-
-
-public final class QueueController {
+public final class QueueController<Response> {
     
-    private var workerQueue: WorkerQueue<URL>!
+    private var workerQueue: WorkerQueue<Response>!
     
     private var queueCondition: Bool {
-        return queueingCount() < bufferSize
+        return _queueingCount < bufferSize
     }
     
-    private var urls: ArraySlice<URL> = [] {
+    private var items: ArraySlice<Response> = [] {
         didSet {
             if queueCondition {
                 workerQueue.run()
-                if let url = urls.popFirst() {
-                    call(url)
+                if let item = items.popFirst() {
+                    call(item)
                 }
             } else {
                 workerQueue.pause()
@@ -38,22 +34,36 @@ public final class QueueController {
     }
     
     private let bufferSize: Int
-    private let queueingCount: () -> Int
-    private let call: (URL) -> Void
+    private let call: (Response) -> Void
     
-    public init(bufferSize: Int = 3, queueingCount: @autoclosure @escaping () -> Int, call: @escaping (URL) -> Void) {
-        self.bufferSize = bufferSize
-        self.queueingCount = queueingCount
-        self.call = call
-        
-        workerQueue = WorkerQueue { [weak self] url in
-            guard let url = url else { return true }
-            self?.urls.append(url)
-            return self?.queueCondition ?? true
+    private var _queueingCount: Int = 0 {
+        didSet {
+            if queueCondition {
+                workerQueue.run()
+            }
         }
     }
     
-    open func add<T: TrackWorker>(_ worker: T) {
+    private let disposeBag = DisposeBag()
+    
+    public init(bufferSize: Int = 3, queueingCount: Observable<Int>, call: @escaping (Response) -> Void) {
+        self.bufferSize = bufferSize
+        self.call = call
+        
+        workerQueue = WorkerQueue { [weak self] item in
+            guard let item = item else { return true }
+            self?.items.append(item)
+            return self?.queueCondition ?? true
+        }
+        
+        queueingCount.distinctUntilChanged()
+            .subscribe(onNext: { [weak self] count in
+                self?._queueingCount = count
+            })
+            .addDisposableTo(disposeBag)
+    }
+    
+    open func add<W: Worker>(_ worker: W) where W.Response == Response {
         workerQueue.add(worker)
     }
 }

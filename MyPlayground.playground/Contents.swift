@@ -10,7 +10,9 @@ import AVFoundation
 PlaygroundPage.current.needsIndefiniteExecution = true
 
 
-final class Worker: TrackWorker {
+final class Worker: AbstractPlayerKit.Worker {
+    
+    typealias Response = URL
     
     var value: URL
     var canPop: Bool = false
@@ -39,9 +41,11 @@ final class Worker: TrackWorker {
 }
 
 var items: [URL] = []
-let player = QueueController(queueingCount: items.count) { url in
+let queueingCount = Variable<Int>(0)
+let player = QueueController<URL>(queueingCount: queueingCount.asObservable()) { url in
     print(url)
     items.append(url)
+    queueingCount.value = items.count
 }
 
 player.add(Worker(value: URL(string: "http://test.com/1")!))
