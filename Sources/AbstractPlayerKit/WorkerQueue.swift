@@ -90,10 +90,10 @@ final class WorkerQueue<Response> {
     }
     
     func add<W: Worker>(_ worker: W) where W.Response == Response {
-        queue.sync {
-            _workers.append(AnyWorker(worker))
-            if state == .waiting {
-                exec()
+        queue.async {
+            self._workers.append(AnyWorker(worker))
+            if self.state == .waiting {
+                self.exec()
             }
         }
     }
@@ -104,7 +104,7 @@ final class WorkerQueue<Response> {
         state = .running
         worker.run()
             .subscribe(onNext: { [weak self, weak wworker=worker] (value) in
-                self?.queue.sync {
+                self?.queue.async {
                     if self?.state == .running {
                         self?.state = .waiting
                     }
