@@ -12,3 +12,17 @@ import Foundation
 public protocol AbstractPlayer {
     
 }
+
+open class Player {
+    
+    var workerQueue: WorkerQueue<URL>!
+    
+    var urls: ArraySlice<URL> = []
+
+    init() {
+        workerQueue = WorkerQueue { [weak self] url in
+            guard let url = url else { return }
+            self?.urls.append(url)
+        }
+    }
+}

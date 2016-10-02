@@ -19,17 +19,6 @@ protocol Worker: class {
     func run() -> Observable<Response?>
 }
 
-
-protocol TrackWorker: Worker {
-    
-    func trackURL() -> Observable<URL?>
-}
-
-protocol TrackSequence {
-    
-    
-}
-
 private class _AnyWorkerBase<R>: Worker {
     
     typealias Response = R
@@ -77,7 +66,7 @@ final class WorkerQueue<Response> {
     var state: State = .waiting
     var _workers: ArraySlice<AnyWorker<Response>> = []
     
-    private let queue = DispatchQueue(label: "jp.sora0077.AbstractPlayer.WorkerQueue", attributes: [])
+    private let queue = DispatchQueue(label: "jp.sora0077.AbstractPlayerKit.WorkerQueue", attributes: [])
     private let disposeBag = DisposeBag()
     
     private let closure: (Response?) -> Void
