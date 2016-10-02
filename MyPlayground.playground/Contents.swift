@@ -4,23 +4,22 @@ import UIKit
 @testable import AbstractPlayerKit
 import RxSwift
 import PlaygroundSupport
+import AVFoundation
 
 
 PlaygroundPage.current.needsIndefiniteExecution = true
 
 
-final class Worker: AbstractPlayerKit.Worker {
+final class Worker: TrackWorker {
     
-    typealias Response = URL
-    
-    var value: Response
+    var value: URL
     var canPop: Bool = false
     
-    init(value: Response) {
+    init(value: URL) {
         self.value = value
     }
     
-    func run() -> Observable<Response?> {
+    func run() -> Observable<URL?> {
         return Observable.create { [weak self] subscriber in
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -39,16 +38,20 @@ final class Worker: AbstractPlayerKit.Worker {
     }
 }
 
-
-let queue = WorkerQueue<URL> { res in
-    print("any ", res)
+var items: [URL] = []
+let player = QueueController(queueingCount: items.count) { url in
+    print(url)
+    items.append(url)
 }
-queue.add(Worker(value: URL(string: "http://test.com/1")!))
-queue.add(Worker(value: URL(string: "http://test.com/2")!))
-queue.add(Worker(value: URL(string: "http://test.com/3")!))
-queue.add(Worker(value: URL(string: "http://test.com/4")!))
-queue.add(Worker(value: URL(string: "http://test.com/5")!))
-queue.add(Worker(value: URL(string: "http://test.com/6")!))
-queue.add(Worker(value: URL(string: "http://test.com/7")!))
-queue.add(Worker(value: URL(string: "http://test.com/8")!))
-queue.add(Worker(value: URL(string: "http://test.com/9")!))
+
+player.add(Worker(value: URL(string: "http://test.com/1")!))
+player.add(Worker(value: URL(string: "http://test.com/2")!))
+player.add(Worker(value: URL(string: "http://test.com/3")!))
+player.add(Worker(value: URL(string: "http://test.com/4")!))
+player.add(Worker(value: URL(string: "http://test.com/5")!))
+player.add(Worker(value: URL(string: "http://test.com/6")!))
+player.add(Worker(value: URL(string: "http://test.com/7")!))
+player.add(Worker(value: URL(string: "http://test.com/8")!))
+player.add(Worker(value: URL(string: "http://test.com/9")!))
+
+

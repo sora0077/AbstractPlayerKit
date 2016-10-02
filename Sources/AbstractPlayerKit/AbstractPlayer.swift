@@ -7,22 +7,53 @@
 //
 
 import Foundation
+import AVKit
+import AVFoundation
 
 
-public protocol AbstractPlayer {
-    
+public protocol TrackWorker: Worker {
+    typealias Response = URL
 }
 
-open class Player {
-    
-    var workerQueue: WorkerQueue<URL>!
-    
-    var urls: ArraySlice<URL> = []
 
-    init() {
-        workerQueue = WorkerQueue { [weak self] url in
-            guard let url = url else { return }
-            self?.urls.append(url)
+public final class QueueController {
+    
+    private var workerQueue: WorkerQueue<URL>!
+    
+    private var queueCondition: Bool {
+        return queueingCount() < bufferSize
+    }
+    
+    private var urls: ArraySlice<URL> = [] {
+        didSet {
+            if queueCondition {
+                workerQueue.run()
+                if let url = urls.popFirst() {
+                    call(url)
+                }
+            } else {
+                workerQueue.pause()
+            }
         }
+    }
+    
+    private let bufferSize: Int
+    private let queueingCount: () -> Int
+    private let call: (URL) -> Void
+    
+    public init(bufferSize: Int = 3, queueingCount: @autoclosure @escaping () -> Int, call: @escaping (URL) -> Void) {
+        self.bufferSize = bufferSize
+        self.queueingCount = queueingCount
+        self.call = call
+        
+        workerQueue = WorkerQueue { [weak self] url in
+            guard let url = url else { return true }
+            self?.urls.append(url)
+            return self?.queueCondition ?? true
+        }
+    }
+    
+    open func add<T: TrackWorker>(_ worker: T) {
+        workerQueue.add(worker)
     }
 }

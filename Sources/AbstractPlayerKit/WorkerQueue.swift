@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 
 
-protocol Worker: class {
+public protocol Worker: class {
     
     associatedtype Response
     
@@ -58,21 +58,35 @@ final class AnyWorker<R>: Worker {
 
 
 enum State {
-    case waiting, running
+    case waiting, running, pausing
 }
 
 final class WorkerQueue<Response> {
     
-    var state: State = .waiting
-    var _workers: ArraySlice<AnyWorker<Response>> = []
+    private(set) var state: State = .waiting
+    private var _workers: ArraySlice<AnyWorker<Response>> = []
     
     private let queue = DispatchQueue(label: "jp.sora0077.AbstractPlayerKit.WorkerQueue", attributes: [])
     private let disposeBag = DisposeBag()
     
-    private let closure: (Response?) -> Void
+    private let closure: (Response?) -> Bool
     
-    init(_ closure: @escaping (Response?) -> Void) {
+    init(_ closure: @escaping (Response?) -> Bool) {
         self.closure = closure
+    }
+    
+    func run() {
+        queue.async {
+            if self.state != .running {
+                self.exec()
+            }
+        }
+    }
+    
+    func pause() {
+        queue.async {
+            self.state = .pausing
+        }
     }
     
     func add<W: Worker>(_ worker: W) where W.Response == Response {
@@ -91,12 +105,16 @@ final class WorkerQueue<Response> {
         worker.run()
             .subscribe(onNext: { [weak self, weak wworker=worker] (value) in
                 self?.queue.sync {
-                    self?.state = .waiting
+                    if self?.state == .running {
+                        self?.state = .waiting
+                    }
                     if wworker?.canPop ?? false {
                         _ = self?._workers.popFirst()
                     }
-                    self?.closure(value)
-                    self?.exec()
+                    
+                    if self?.closure(value) ?? false, self?.state != .pausing {
+                        self?.exec()
+                    }
                 }
             })
             .addDisposableTo(disposeBag)
