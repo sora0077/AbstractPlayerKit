@@ -7,9 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D9BD5E961D9C07D600B7755B /* AbstractPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9BD5E8C1D9C07D600B7755B /* AbstractPlayer.framework */; };
+		D9BD5E961D9C07D600B7755B /* AbstractPlayerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9BD5E8C1D9C07D600B7755B /* AbstractPlayerKit.framework */; };
 		D9BD5E9B1D9C07D600B7755B /* AbstractPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD5E9A1D9C07D600B7755B /* AbstractPlayerTests.swift */; };
 		D9BD5E9D1D9C07D600B7755B /* AbstractPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D9BD5E8F1D9C07D600B7755B /* AbstractPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D9BD5EAC1D9C0A3200B7755B /* AbstractPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD5EAB1D9C0A3200B7755B /* AbstractPlayer.swift */; };
+		D9BD5EAE1D9C0A5E00B7755B /* PlayingQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD5EAD1D9C0A5E00B7755B /* PlayingQueue.swift */; };
+		D9BD5EB11D9C0F0A00B7755B /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9BD5EB01D9C0F0A00B7755B /* RxSwift.framework */; };
+		D9BD5EB41DA0CD5800B7755B /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D9BD5EB01D9C0F0A00B7755B /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -22,13 +26,30 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		D9BD5EB31DA0CD2F00B7755B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D9BD5EB41DA0CD5800B7755B /* RxSwift.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		D9BD5E8C1D9C07D600B7755B /* AbstractPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AbstractPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9BD5E8C1D9C07D600B7755B /* AbstractPlayerKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AbstractPlayerKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9BD5E8F1D9C07D600B7755B /* AbstractPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AbstractPlayer.h; sourceTree = "<group>"; };
 		D9BD5E901D9C07D600B7755B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D9BD5E951D9C07D600B7755B /* AbstractPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbstractPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D9BD5E951D9C07D600B7755B /* AbstractPlayerKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbstractPlayerKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9BD5E9A1D9C07D600B7755B /* AbstractPlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractPlayerTests.swift; sourceTree = "<group>"; };
 		D9BD5E9C1D9C07D600B7755B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D9BD5EAB1D9C0A3200B7755B /* AbstractPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractPlayer.swift; sourceTree = "<group>"; };
+		D9BD5EAD1D9C0A5E00B7755B /* PlayingQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayingQueue.swift; sourceTree = "<group>"; };
+		D9BD5EB01D9C0F0A00B7755B /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
+		D9BD5EB21DA0C93C00B7755B /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = MyPlayground.playground; path = AbstractPlayerKit.xcodeproj/../MyPlayground.playground; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9BD5EB11D9C0F0A00B7755B /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,7 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D9BD5E961D9C07D600B7755B /* AbstractPlayer.framework in Frameworks */,
+				D9BD5E961D9C07D600B7755B /* AbstractPlayerKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,8 +75,11 @@
 		D9BD5E821D9C07D600B7755B = {
 			isa = PBXGroup;
 			children = (
+				D9BD5EB21DA0C93C00B7755B /* MyPlayground.playground */,
+				D9BD5EA61D9C082800B7755B /* Sources */,
 				D9BD5E8E1D9C07D600B7755B /* AbstractPlayer */,
 				D9BD5E991D9C07D600B7755B /* AbstractPlayerTests */,
+				D9BD5EAF1D9C0EF100B7755B /* Frameworks */,
 				D9BD5E8D1D9C07D600B7755B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -62,8 +87,8 @@
 		D9BD5E8D1D9C07D600B7755B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D9BD5E8C1D9C07D600B7755B /* AbstractPlayer.framework */,
-				D9BD5E951D9C07D600B7755B /* AbstractPlayerTests.xctest */,
+				D9BD5E8C1D9C07D600B7755B /* AbstractPlayerKit.framework */,
+				D9BD5E951D9C07D600B7755B /* AbstractPlayerKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -86,6 +111,31 @@
 			path = AbstractPlayerTests;
 			sourceTree = "<group>";
 		};
+		D9BD5EA61D9C082800B7755B /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D9BD5EAA1D9C0A3200B7755B /* AbstractPlayerKit */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		D9BD5EAA1D9C0A3200B7755B /* AbstractPlayerKit */ = {
+			isa = PBXGroup;
+			children = (
+				D9BD5EAB1D9C0A3200B7755B /* AbstractPlayer.swift */,
+				D9BD5EAD1D9C0A5E00B7755B /* PlayingQueue.swift */,
+			);
+			path = AbstractPlayerKit;
+			sourceTree = "<group>";
+		};
+		D9BD5EAF1D9C0EF100B7755B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D9BD5EB01D9C0F0A00B7755B /* RxSwift.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -100,27 +150,28 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		D9BD5E8B1D9C07D600B7755B /* AbstractPlayer */ = {
+		D9BD5E8B1D9C07D600B7755B /* AbstractPlayerKit */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D9BD5EA01D9C07D600B7755B /* Build configuration list for PBXNativeTarget "AbstractPlayer" */;
+			buildConfigurationList = D9BD5EA01D9C07D600B7755B /* Build configuration list for PBXNativeTarget "AbstractPlayerKit" */;
 			buildPhases = (
 				D9BD5E871D9C07D600B7755B /* Sources */,
 				D9BD5E881D9C07D600B7755B /* Frameworks */,
 				D9BD5E891D9C07D600B7755B /* Headers */,
 				D9BD5E8A1D9C07D600B7755B /* Resources */,
+				D9BD5EB31DA0CD2F00B7755B /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = AbstractPlayer;
+			name = AbstractPlayerKit;
 			productName = AbstractPlayer;
-			productReference = D9BD5E8C1D9C07D600B7755B /* AbstractPlayer.framework */;
+			productReference = D9BD5E8C1D9C07D600B7755B /* AbstractPlayerKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		D9BD5E941D9C07D600B7755B /* AbstractPlayerTests */ = {
+		D9BD5E941D9C07D600B7755B /* AbstractPlayerKitTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D9BD5EA31D9C07D600B7755B /* Build configuration list for PBXNativeTarget "AbstractPlayerTests" */;
+			buildConfigurationList = D9BD5EA31D9C07D600B7755B /* Build configuration list for PBXNativeTarget "AbstractPlayerKitTests" */;
 			buildPhases = (
 				D9BD5E911D9C07D600B7755B /* Sources */,
 				D9BD5E921D9C07D600B7755B /* Frameworks */,
@@ -131,9 +182,9 @@
 			dependencies = (
 				D9BD5E981D9C07D600B7755B /* PBXTargetDependency */,
 			);
-			name = AbstractPlayerTests;
+			name = AbstractPlayerKitTests;
 			productName = AbstractPlayerTests;
-			productReference = D9BD5E951D9C07D600B7755B /* AbstractPlayerTests.xctest */;
+			productReference = D9BD5E951D9C07D600B7755B /* AbstractPlayerKitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -148,6 +199,7 @@
 				TargetAttributes = {
 					D9BD5E8B1D9C07D600B7755B = {
 						CreatedOnToolsVersion = 8.0;
+						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 					};
 					D9BD5E941D9C07D600B7755B = {
@@ -156,7 +208,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D9BD5E861D9C07D600B7755B /* Build configuration list for PBXProject "AbstractPlayer" */;
+			buildConfigurationList = D9BD5E861D9C07D600B7755B /* Build configuration list for PBXProject "AbstractPlayerKit" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -168,8 +220,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D9BD5E8B1D9C07D600B7755B /* AbstractPlayer */,
-				D9BD5E941D9C07D600B7755B /* AbstractPlayerTests */,
+				D9BD5E8B1D9C07D600B7755B /* AbstractPlayerKit */,
+				D9BD5E941D9C07D600B7755B /* AbstractPlayerKitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -196,6 +248,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9BD5EAE1D9C0A5E00B7755B /* PlayingQueue.swift in Sources */,
+				D9BD5EAC1D9C0A3200B7755B /* AbstractPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,7 +266,7 @@
 /* Begin PBXTargetDependency section */
 		D9BD5E981D9C07D600B7755B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = D9BD5E8B1D9C07D600B7755B /* AbstractPlayer */;
+			target = D9BD5E8B1D9C07D600B7755B /* AbstractPlayerKit */;
 			targetProxy = D9BD5E971D9C07D600B7755B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -320,17 +374,23 @@
 		D9BD5EA11D9C07D600B7755B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = AbstractPlayer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.sora0077.AbstractPlayer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -338,11 +398,16 @@
 		D9BD5EA21D9C07D600B7755B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = AbstractPlayer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -356,6 +421,7 @@
 		D9BD5EA41D9C07D600B7755B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = AbstractPlayerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.sora0077.AbstractPlayerTests;
@@ -367,6 +433,7 @@
 		D9BD5EA51D9C07D600B7755B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = AbstractPlayerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jp.sora0077.AbstractPlayerTests;
@@ -378,7 +445,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D9BD5E861D9C07D600B7755B /* Build configuration list for PBXProject "AbstractPlayer" */ = {
+		D9BD5E861D9C07D600B7755B /* Build configuration list for PBXProject "AbstractPlayerKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D9BD5E9E1D9C07D600B7755B /* Debug */,
@@ -387,21 +454,23 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D9BD5EA01D9C07D600B7755B /* Build configuration list for PBXNativeTarget "AbstractPlayer" */ = {
+		D9BD5EA01D9C07D600B7755B /* Build configuration list for PBXNativeTarget "AbstractPlayerKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D9BD5EA11D9C07D600B7755B /* Debug */,
 				D9BD5EA21D9C07D600B7755B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
-		D9BD5EA31D9C07D600B7755B /* Build configuration list for PBXNativeTarget "AbstractPlayerTests" */ = {
+		D9BD5EA31D9C07D600B7755B /* Build configuration list for PBXNativeTarget "AbstractPlayerKitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D9BD5EA41D9C07D600B7755B /* Debug */,
 				D9BD5EA51D9C07D600B7755B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
