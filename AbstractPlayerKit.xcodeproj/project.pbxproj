@@ -10,7 +10,7 @@
 		D9BD5E961D9C07D600B7755B /* AbstractPlayerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9BD5E8C1D9C07D600B7755B /* AbstractPlayerKit.framework */; };
 		D9BD5E9B1D9C07D600B7755B /* AbstractPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD5E9A1D9C07D600B7755B /* AbstractPlayerTests.swift */; };
 		D9BD5E9D1D9C07D600B7755B /* AbstractPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = D9BD5E8F1D9C07D600B7755B /* AbstractPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D9BD5EAC1D9C0A3200B7755B /* AbstractPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD5EAB1D9C0A3200B7755B /* AbstractPlayer.swift */; };
+		D9BD5EAC1D9C0A3200B7755B /* QueueController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD5EAB1D9C0A3200B7755B /* QueueController.swift */; };
 		D9BD5EAE1D9C0A5E00B7755B /* WorkerQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD5EAD1D9C0A5E00B7755B /* WorkerQueue.swift */; };
 		D9BD5EB11D9C0F0A00B7755B /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9BD5EB01D9C0F0A00B7755B /* RxSwift.framework */; };
 		D9BD5EB41DA0CD5800B7755B /* RxSwift.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D9BD5EB01D9C0F0A00B7755B /* RxSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -46,7 +46,7 @@
 		D9BD5E951D9C07D600B7755B /* AbstractPlayerKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbstractPlayerKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9BD5E9A1D9C07D600B7755B /* AbstractPlayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractPlayerTests.swift; sourceTree = "<group>"; };
 		D9BD5E9C1D9C07D600B7755B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D9BD5EAB1D9C0A3200B7755B /* AbstractPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractPlayer.swift; sourceTree = "<group>"; };
+		D9BD5EAB1D9C0A3200B7755B /* QueueController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueueController.swift; sourceTree = "<group>"; };
 		D9BD5EAD1D9C0A5E00B7755B /* WorkerQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WorkerQueue.swift; sourceTree = "<group>"; };
 		D9BD5EB01D9C0F0A00B7755B /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		D9BD5EB21DA0C93C00B7755B /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; name = MyPlayground.playground; path = AbstractPlayerKit.xcodeproj/../MyPlayground.playground; sourceTree = "<group>"; };
@@ -122,7 +122,7 @@
 		D9BD5EAA1D9C0A3200B7755B /* AbstractPlayerKit */ = {
 			isa = PBXGroup;
 			children = (
-				D9BD5EAB1D9C0A3200B7755B /* AbstractPlayer.swift */,
+				D9BD5EAB1D9C0A3200B7755B /* QueueController.swift */,
 				D9BD5EAD1D9C0A5E00B7755B /* WorkerQueue.swift */,
 			);
 			path = AbstractPlayerKit;
@@ -249,7 +249,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9BD5EAE1D9C0A5E00B7755B /* WorkerQueue.swift in Sources */,
-				D9BD5EAC1D9C0A3200B7755B /* AbstractPlayer.swift in Sources */,
+				D9BD5EAC1D9C0A3200B7755B /* QueueController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 //
-//  AbstractPlayer.swift
+//  QueueController.swift
 //  AbstractPlayer
 //
 //  Created by 林達也 on 2016/09/28.
