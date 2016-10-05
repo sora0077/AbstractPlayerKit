@@ -64,7 +64,7 @@ enum State {
 final class WorkerQueue<Response> {
     
     private(set) var state: State = .waiting
-    private var _workers: ArraySlice<AnyWorker<Response>> = []
+    private var workers: ArraySlice<AnyWorker<Response>> = []
     
     private let queue = DispatchQueue(label: "jp.sora0077.AbstractPlayerKit.WorkerQueue", attributes: [])
     private let disposeBag = DisposeBag()
@@ -91,7 +91,7 @@ final class WorkerQueue<Response> {
     
     func add<W: Worker>(_ worker: W) where W.Response == Response {
         queue.async {
-            self._workers.append(AnyWorker(worker))
+            self.workers.append(AnyWorker(worker))
             if self.state == .waiting {
                 self.exec()
             }
@@ -99,7 +99,7 @@ final class WorkerQueue<Response> {
     }
     
     private func exec() {
-        guard let worker = _workers.first else { return }
+        guard let worker = workers.first else { return }
         
         state = .running
         worker.run()
@@ -109,7 +109,7 @@ final class WorkerQueue<Response> {
                         self?.state = .waiting
                     }
                     if wworker?.canPop ?? false {
-                        _ = self?._workers.popFirst()
+                        _ = self?.workers.popFirst()
                     }
                     
                     if self?.closure(value) ?? false, self?.state != .pausing {

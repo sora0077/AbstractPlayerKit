@@ -17,7 +17,7 @@ public final class QueueController<Response> {
     private var workerQueue: WorkerQueue<Response>!
     
     private var queueCondition: Bool {
-        return _queueingCount < bufferSize
+        return queueingCount < bufferSize
     }
     
     private var items: ArraySlice<Response> = [] {
@@ -36,7 +36,7 @@ public final class QueueController<Response> {
     private let bufferSize: Int
     private let call: (Response) -> Void
     
-    private var _queueingCount: Int = 0 {
+    private var queueingCount: Int = 0 {
         didSet {
             if queueCondition {
                 workerQueue.run()
@@ -58,7 +58,7 @@ public final class QueueController<Response> {
         
         queueingCount.distinctUntilChanged()
             .subscribe(onNext: { [weak self] count in
-                self?._queueingCount = count
+                self?.queueingCount = count
             })
             .addDisposableTo(disposeBag)
     }
