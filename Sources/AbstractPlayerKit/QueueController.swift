@@ -17,24 +17,10 @@ public final class QueueController<Response> {
     private var workerQueue: WorkerQueue<Response>!
     
     private var queueCondition: Bool {
-        return queueingCount < bufferSize
-    }
-    
-    private var items: ArraySlice<Response> = [] {
-        didSet {
-            if queueCondition {
-                workerQueue.run()
-                if let item = items.popFirst() {
-                    call(item)
-                }
-            } else {
-                workerQueue.pause()
-            }
-        }
+        return queueingCount <= bufferSize
     }
     
     private let bufferSize: Int
-    private let call: (Response) -> Void
     
     private var queueingCount: Int = 0 {
         didSet {
@@ -48,11 +34,10 @@ public final class QueueController<Response> {
     
     public init(bufferSize: Int = 3, queueingCount: Observable<Int>, call: @escaping (Response) -> Void) {
         self.bufferSize = bufferSize
-        self.call = call
         
         workerQueue = WorkerQueue { [weak self] item in
             guard let item = item else { return true }
-            self?.items.append(item)
+            call(item)
             return self?.queueCondition ?? true
         }
         

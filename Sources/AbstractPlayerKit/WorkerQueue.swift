@@ -69,10 +69,10 @@ final class WorkerQueue<Response> {
     private let queue = DispatchQueue(label: "jp.sora0077.AbstractPlayerKit.WorkerQueue", attributes: [])
     private let disposeBag = DisposeBag()
     
-    private let closure: (Response?) -> Bool
+    private let next: (Response?) -> Bool
     
-    init(_ closure: @escaping (Response?) -> Bool) {
-        self.closure = closure
+    init(_ next: @escaping (Response?) -> Bool) {
+        self.next = next
     }
     
     func run() {
@@ -105,14 +105,17 @@ final class WorkerQueue<Response> {
         worker.run()
             .subscribe(onNext: { [weak self, weak wworker=worker] (value) in
                 self?.queue.async {
-                    if self?.state == .running {
-                        self?.state = .waiting
+                    defer {
+                        if self?.state == .running {
+                            self?.state = .waiting
+                        }
                     }
+                    
                     if wworker?.canPop ?? false {
                         _ = self?.workers.popFirst()
                     }
                     
-                    if self?.closure(value) ?? false, self?.state != .pausing {
+                    if self?.next(value) ?? false, self?.state != .pausing {
                         self?.exec()
                     }
                 }
