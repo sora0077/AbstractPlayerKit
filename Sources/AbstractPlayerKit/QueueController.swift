@@ -48,7 +48,7 @@ public final class QueueController<Response> {
             .addDisposableTo(disposeBag)
     }
     
-    open func add<W: Worker>(_ worker: W) where W.Response == Response {
-        workerQueue.add(worker)
+    open func add<W: Worker>(_ worker: W, priority: Priority = .default) where W.Response == Response {
+        workerQueue.add(worker, priority: priority)
     }
 }
