@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D975B6381DAFE5EE00AC9639 /* Worker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D975B6371DAFE5EE00AC9639 /* Worker.swift */; };
 		D9B341411DA55D300044D0A3 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B341401DA55D300044D0A3 /* Player.swift */; };
 		D9BD5E961D9C07D600B7755B /* AbstractPlayerKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9BD5E8C1D9C07D600B7755B /* AbstractPlayerKit.framework */; };
 		D9BD5E9B1D9C07D600B7755B /* AbstractPlayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD5E9A1D9C07D600B7755B /* AbstractPlayerTests.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D975B6371DAFE5EE00AC9639 /* Worker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Worker.swift; sourceTree = "<group>"; };
 		D9B341401DA55D300044D0A3 /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		D9BD5E8C1D9C07D600B7755B /* AbstractPlayerKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AbstractPlayerKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9BD5E8F1D9C07D600B7755B /* AbstractPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AbstractPlayer.h; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				D9B341401DA55D300044D0A3 /* Player.swift */,
 				D9BD5EAB1D9C0A3200B7755B /* QueueController.swift */,
 				D9BD5EAD1D9C0A5E00B7755B /* WorkerQueue.swift */,
+				D975B6371DAFE5EE00AC9639 /* Worker.swift */,
 			);
 			path = AbstractPlayerKit;
 			sourceTree = "<group>";
@@ -252,6 +255,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9BD5EAE1D9C0A5E00B7755B /* WorkerQueue.swift in Sources */,
+				D975B6381DAFE5EE00AC9639 /* Worker.swift in Sources */,
 				D9B341411DA55D300044D0A3 /* Player.swift in Sources */,
 				D9BD5EAC1D9C0A3200B7755B /* QueueController.swift in Sources */,
 			);
