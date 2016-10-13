@@ -55,4 +55,8 @@ public final class QueueController<Response> {
     public func remove(at index: Int, priority: Priority = .default) {
         workerQueue.remove(at: index, priority: priority)
     }
+    
+    public func removeAll() {
+        workerQueue.removeAll()
+    }
 }

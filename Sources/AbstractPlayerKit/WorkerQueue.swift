@@ -85,7 +85,7 @@ final class WorkerQueue<Response> {
     private var highWorkers: ArraySlice<AnyWorker<Response>> = []
     private var workers: ArraySlice<AnyWorker<Response>> = []
     
-    private let queue = DispatchQueue(label: "jp.sora0077.AbstractPlayerKit.WorkerQueue", attributes: [])
+    private let queue = DispatchQueue(label: "jp.sora0077.AbstractPlayerKit.WorkerQueue")
     private let disposeBag = DisposeBag()
     
     private let next: (Response?) -> Bool
@@ -135,6 +135,13 @@ final class WorkerQueue<Response> {
             case .high:
                 removeWorker(from: &self.highWorkers)
             }
+        }
+    }
+    
+    func removeAll() {
+        queue.async {
+            self.highWorkers.removeAll()
+            self.workers.removeAll()
         }
     }
     
