@@ -51,4 +51,8 @@ public final class QueueController<Response> {
     public func add<W: Worker>(_ worker: W, priority: Priority = .default) where W.Response == Response {
         workerQueue.add(worker, priority: priority)
     }
+    
+    public func remove(at index: Int, priority: Priority = .default) {
+        workerQueue.remove(at: index, priority: priority)
+    }
 }

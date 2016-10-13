@@ -45,8 +45,9 @@ final class AnyWorker<R>: Worker, Equatable {
     typealias Response = R
     
     private let id: Int = assignUniqueId()
-    
     private let base: _AnyWorkerBase<Response>
+    
+    fileprivate var state = State.waiting
     
     init<W: Worker>(_ worker: W) where W.Response == R {
         base = _AnyWorker(base: worker)
@@ -121,10 +122,26 @@ final class WorkerQueue<Response> {
         }
     }
     
+    func remove(at index: Int, priority: Priority = .default) {
+        func removeWorker(from array: inout ArraySlice<AnyWorker<Response>>) {
+            if let worker = array[safe: index], worker.state == .waiting {
+                array.remove(at: index)
+            }
+        }
+        queue.async {
+            switch priority {
+            case .default:
+                removeWorker(from: &self.workers)
+            case .high:
+                removeWorker(from: &self.highWorkers)
+            }
+        }
+    }
+    
     private func exec() {
         guard let worker = highWorkers.first ?? workers.first else { return }
         
-        state = .running
+        (worker.state, state) = (.running, .running)
         worker.run()
             .subscribe(onNext: { [weak self, weak wworker=worker] (value) in
                 self?.queue.async {
@@ -148,5 +165,11 @@ final class WorkerQueue<Response> {
                 }
             })
             .addDisposableTo(disposeBag)
+    }
+}
+
+extension ArraySlice {
+    fileprivate subscript (safe index: Int) -> Element? {
+        return count > index ? self[index] : nil
     }
 }
