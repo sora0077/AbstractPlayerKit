@@ -1,5 +1,5 @@
 //
-//  QueueController.swift
+//  WorkerController.swift
 //  AbstractPlayer
 //
 //  Created by 林達也 on 2016/09/28.
@@ -12,7 +12,7 @@ import AVFoundation
 import RxSwift
 
 
-public final class QueueController<Response> {
+public final class WorkerController<Response> {
     
     private var workerQueue: WorkerQueue<Response>!
     
@@ -32,7 +32,7 @@ public final class QueueController<Response> {
     
     private let disposeBag = DisposeBag()
     
-    public init(bufferSize: Int = 3, queueingCount: Observable<Int>, call: @escaping (Response) -> Void) {
+    public init(bufferSize: Int, queueingCount: Observable<Int>, call: @escaping (Response) -> Void) {
         self.bufferSize = bufferSize
         
         workerQueue = WorkerQueue { [weak self] item in
