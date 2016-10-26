@@ -77,28 +77,31 @@ final class WorkerQueue<Response> {
     }
     
     private func exec() {
+        highWorkers = ArraySlice(highWorkers.filter { !$0.canPop })
+        workers = ArraySlice(workers.filter { !$0.canPop })
         guard let worker = highWorkers.first ?? workers.first else { return }
         
         (worker.state, state) = (.running, .running)
         worker.run()
             .subscribe(onNext: { [weak self, weak wworker=worker] (value) in
-                self?.queue.async {
+                guard let `self` = self else { return }
+                self.queue.async {
                     defer {
-                        if self?.state == .running {
-                            self?.state = .waiting
+                        if self.state == .running {
+                            self.state = .waiting
                         }
                     }
                     
                     if let worker = wworker, worker.canPop {
-                        if let idx = self?.highWorkers.index(of: worker) {
-                            self?.highWorkers.remove(at: idx)
-                        } else if let idx = self?.workers.index(of: worker) {
-                            self?.workers.remove(at: idx)
+                        if let idx = self.highWorkers.index(of: worker) {
+                            self.highWorkers.remove(at: idx)
+                        } else if let idx = self.workers.index(of: worker) {
+                            self.workers.remove(at: idx)
                         }
                     }
                     
-                    if self?.next(value) ?? false, self?.state != .pausing {
-                        self?.exec()
+                    if self.next(value), self.state != .pausing {
+                        self.exec()
                     }
                 }
             })
