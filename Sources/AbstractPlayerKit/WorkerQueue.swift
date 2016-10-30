@@ -12,7 +12,7 @@ import RxSwift
 
 final class WorkerQueue<Response> {
     
-    private(set) var state: State = .waiting
+    private(set) var state: WorkerState = .waiting
     private var highWorkers: ArraySlice<AnyWorker<Response>> = []
     private var workers: ArraySlice<AnyWorker<Response>> = []
     

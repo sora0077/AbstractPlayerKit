@@ -14,7 +14,7 @@ public enum Priority {
     case `default`, high
 }
 
-enum State {
+enum WorkerState {
     case waiting, running, pausing
 }
 
@@ -55,7 +55,7 @@ final class AnyWorker<R>: Worker, Equatable {
     private let id: Int = assignUniqueId()
     private let base: _AnyWorkerBase<Response>
     
-    var state = State.waiting
+    var state: WorkerState = .waiting
     
     init<W: Worker>(_ worker: W) where W.Response == R {
         base = _AnyWorker(base: worker)
