@@ -13,14 +13,23 @@ import RxSwift
 
 open class PlayerItem {
     public enum State {
-        case waiting, requesting, readyForPlay, nowPlaying
+        case waiting, prepareForRequest, requesting, readyForPlay, nowPlaying, rejected
     }
     
-    var state: State = .waiting
+    var state: State { return _state.value }
+    
+    let _state: Variable<State>
+    
+    var isObserved: Bool = false
     
     var avPlayerItem: AVPlayerItem?
     
-    open func requestingFinished() {
-        
+    public init(state: State = .waiting) {
+        _state = Variable(state)
+    }
+    
+    
+    open func fetch(_ completion: (_ done: Bool) -> Void) {
+        fatalError()
     }
 }

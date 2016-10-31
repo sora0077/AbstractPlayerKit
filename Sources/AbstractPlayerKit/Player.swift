@@ -9,6 +9,7 @@
 import Foundation
 import AVFoundation
 import RxSwift
+import RxCocoa
 
 
 func partial<A, B, R>(_ f: @escaping (A, B) -> R, _ val: @escaping @autoclosure () -> A) -> (B) -> R {
@@ -26,22 +27,81 @@ func partial<A, B, C, D, R>(
 }
 
 
-public class Player<Item: PlayerItem> {
+public final class Player<Item: PlayerItem> {
     
     fileprivate let core = _Player()
     
+    private let disposeBag = DisposeBag()
+    
     var currentItem: PlayerItem?
     
-    fileprivate(set) var items: [Item] = [] {
+    public fileprivate(set) var items: [Item] = [] {
         didSet {
+            items
+                .filter { !$0.isObserved }
+                .forEach {
+                    $0._state.asObservable()
+                        .subscribe(onNext: { [weak self, weak item=$0] state in
+                            guard let `self` = self, let item = item else { return }
+                            switch state {
+                            case .prepareForRequest:
+                                self.updateRequestQueue()
+                            case .requesting:()
+                            case .readyForPlay:
+                                if let index = self.requesting.index(where: { $0 === item }) {
+                                    self.requesting.remove(at: index)
+                                    self.updateRequestQueue()
+                                }
+                            case .nowPlaying:
+                                break
+                            case .rejected:
+                                if let index = self.items.index(where: { $0 === item }) {
+                                    self.items.remove(at: index)
+                                }
+                                if let index = self.requesting.index(where: { $0 === item }) {
+                                    self.requesting.remove(at: index)
+                                }
+                            case .waiting:()
+                            }
+                        })
+                        .addDisposableTo(disposeBag)
+                    $0.isObserved = true
+                }
             
         }
     }
     
-    public init() {
+    private var requesting: ArraySlice<Item> = [] {
+        didSet {
+            for item in requesting {
+                if item._state.value == .waiting {
+                    item._state.value = .prepareForRequest
+                }
+                if item._state.value == .prepareForRequest {
+                    item._state.value = .requesting
+                    item.fetch { [weak item=item] done in
+                        item?._state.value = done ? .readyForPlay : .prepareForRequest
+                    }
+                }
+            }
+        }
+    }
+    
+    private let requestCount: Int
+    
+    public init(requestCount: Int = 3) {
+        self.requestCount = requestCount
         core.delegate = self
     }
     
+    private func updateRequestQueue() {
+        requesting = requesting + items
+            .filter { $0.state == .waiting }
+            .prefix(requestCount - requesting.count)
+    }
+}
+
+public extension Player {
     func play() { core.play() }
     
     func pause() { core.pause() }
