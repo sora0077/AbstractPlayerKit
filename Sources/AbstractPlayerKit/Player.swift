@@ -33,7 +33,7 @@ public final class Player<Item: PlayerItem> {
     
     private let disposeBag = DisposeBag()
     
-    public var currentItem: PlayerItem?
+    public fileprivate(set) weak var currentItem: Item?
     
     public fileprivate(set) var items: [Item] = [] {
         didSet {
@@ -85,6 +85,7 @@ public final class Player<Item: PlayerItem> {
                 requesting.remove(at: index)
                 updateRequestQueue()
             }
+            updateNowPlaying()
         case .rejected:
             if let index = items.index(of: item) {
                 items.remove(at: index)
@@ -100,17 +101,22 @@ public final class Player<Item: PlayerItem> {
     }
     
     private func updateRequestQueue() {
-        requesting = requesting + items
-            .filter { $0.state == .waiting }
-            .prefix(requestLimit - requesting.count)
+        if requestLimit > requesting.count {
+            requesting = requesting + items.lazy
+                .filter { $0.state == .waiting }
+                .prefix(requestLimit - requesting.count)
+        }
     }
     
     private func updateNowPlaying() {
-        guard let item = items.first, let avPlayerItem = item.avPlayerItem, item.state == .readyForPlay else {
+        guard let item = items.first, item.state == .readyForPlay else {
             return
         }
         item.state = .nowPlaying
-        avPlayerItem.asset.loadValuesAsynchronously(forKeys: ["duration"]) { [weak self] in
+        item.generateAVPlayerItem { [weak self, weak item=item] avPlayerItem in
+            guard let avPlayerItem = avPlayerItem else { return }
+            
+            item?.avPlayerItem = avPlayerItem
             self?.core.insert(avPlayerItem, after: nil)
         }
     }
@@ -132,6 +138,7 @@ public extension Player {
     
     func insert(atFirst item: Item) {
         items.insert(item, at: 0)
+        requesting.insert(item, at: 0)
     }
     
     func insert(_ item: Item, after afterItem: Item?) {

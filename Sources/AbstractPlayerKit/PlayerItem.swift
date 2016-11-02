@@ -12,12 +12,13 @@ import RxSwift
 
 
 open class PlayerItem: Hashable {
+    
     public enum State {
         case waiting, prepareForRequest, requesting, readyForPlay, nowPlaying, rejected
     }
     
     let _state: Variable<State>
-    var state: State {
+    open var state: State {
         set { _state.value = newValue }
         get { return _state.value }
     }
@@ -28,7 +29,7 @@ open class PlayerItem: Hashable {
     
     var isObserved: Bool = false
     
-    open var avPlayerItem: AVPlayerItem?
+    var avPlayerItem: AVPlayerItem?
     
     public init(state: State = .waiting) {
         _state = Variable(state)
@@ -36,5 +37,9 @@ open class PlayerItem: Hashable {
     
     public static func == (lhs: PlayerItem, rhs: PlayerItem) -> Bool {
         return lhs.uuid == rhs.uuid
+    }
+    
+    open func generateAVPlayerItem(_ completion: (AVPlayerItem?) -> Void) {
+        fatalError()
     }
 }
