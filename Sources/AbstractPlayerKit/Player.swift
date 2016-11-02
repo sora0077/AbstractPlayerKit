@@ -29,75 +29,90 @@ func partial<A, B, C, D, R>(
 
 public final class Player<Item: PlayerItem> {
     
-    fileprivate let core = _Player()
+    fileprivate let core: _Player
     
     private let disposeBag = DisposeBag()
     
-    var currentItem: PlayerItem?
+    public var currentItem: PlayerItem?
     
     public fileprivate(set) var items: [Item] = [] {
         didSet {
             items
+                .lazy
                 .filter { !$0.isObserved }
                 .forEach {
+                    $0.isObserved = true
                     $0._state.asObservable()
+                        .distinctUntilChanged()
+                        .observeOn(SerialDispatchQueueScheduler(qos: .default))
                         .subscribe(onNext: { [weak self, weak item=$0] state in
                             guard let `self` = self, let item = item else { return }
-                            switch state {
-                            case .prepareForRequest:
-                                self.updateRequestQueue()
-                            case .requesting:()
-                            case .readyForPlay:
-                                if let index = self.requesting.index(where: { $0 === item }) {
-                                    self.requesting.remove(at: index)
-                                    self.updateRequestQueue()
-                                }
-                            case .nowPlaying:
-                                break
-                            case .rejected:
-                                if let index = self.items.index(where: { $0 === item }) {
-                                    self.items.remove(at: index)
-                                }
-                                if let index = self.requesting.index(where: { $0 === item }) {
-                                    self.requesting.remove(at: index)
-                                }
-                            case .waiting:()
-                            }
+                            self.update(item, in: state)
                         })
                         .addDisposableTo(disposeBag)
-                    $0.isObserved = true
                 }
             
         }
     }
     
-    private var requesting: ArraySlice<Item> = [] {
+    fileprivate var requesting: ArraySlice<Item> = [] {
         didSet {
-            for item in requesting {
-                if item._state.value == .waiting {
-                    item._state.value = .prepareForRequest
+            for item in Set(requesting).subtracting(oldValue) {
+                if item.state == .waiting {
+                    item.state = .prepareForRequest
                 }
-                if item._state.value == .prepareForRequest {
-                    item._state.value = .requesting
-                    item.fetch { [weak item=item] done in
-                        item?._state.value = done ? .readyForPlay : .prepareForRequest
-                    }
+                if item.state == .prepareForRequest {
+                    item.state = .requesting
                 }
             }
         }
     }
     
-    private let requestCount: Int
+    private let requestLimit: Int
     
-    public init(requestCount: Int = 3) {
-        self.requestCount = requestCount
-        core.delegate = self
+    public init(core: AVQueuePlayer = AVQueuePlayer(), requestLimit: Int = 3) {
+        self.core = _Player(core: core)
+        self.requestLimit = requestLimit
+        self.core.delegate = self
+    }
+    
+    private func update(_ item: Item, in state: Item.State) {
+        switch state {
+        case .prepareForRequest:
+            updateRequestQueue()
+        case .readyForPlay:
+            if let index = requesting.index(of: item) {
+                requesting.remove(at: index)
+                updateRequestQueue()
+            }
+        case .rejected:
+            if let index = items.index(of: item) {
+                items.remove(at: index)
+            }
+            if let index = requesting.index(of: item) {
+                requesting.remove(at: index)
+                updateRequestQueue()
+            }
+        case .waiting:()
+        case .requesting:()
+        case .nowPlaying:()
+        }
     }
     
     private func updateRequestQueue() {
         requesting = requesting + items
             .filter { $0.state == .waiting }
-            .prefix(requestCount - requesting.count)
+            .prefix(requestLimit - requesting.count)
+    }
+    
+    private func updateNowPlaying() {
+        guard let item = items.first, let avPlayerItem = item.avPlayerItem, item.state == .readyForPlay else {
+            return
+        }
+        item.state = .nowPlaying
+        avPlayerItem.asset.loadValuesAsynchronously(forKeys: ["duration"]) { [weak self] in
+            self?.core.insert(avPlayerItem, after: nil)
+        }
     }
 }
 
@@ -115,12 +130,13 @@ public extension Player {
         return true
     }
     
+    func insert(atFirst item: Item) {
+        items.insert(item, at: 0)
+    }
+    
     func insert(_ item: Item, after afterItem: Item?) {
-        if let item = item.avPlayerItem {
-            core.insert(item, after: afterItem?.avPlayerItem)
-        }
-        if let index = items.index(where: { $0 === afterItem }) {
-            items.insert(item, at: index)
+        if let index = items.index(of: item) {
+            items.insert(item, at: index + 1)
         } else {
             items.append(item)
         }
@@ -130,14 +146,18 @@ public extension Player {
         if let item = item.avPlayerItem {
             core.remove(item)
         }
-        if let index = items.index(where: { $0 === item }) {
+        if let index = items.index(of: item) {
             items.remove(at: index)
+        }
+        if let index = requesting.index(of: item) {
+            requesting.remove(at: index)
         }
     }
     
     func removeAllItems() {
         core.removeAllItems()
         items.removeAll()
+        requesting.removeAll()
     }
 }
 
@@ -175,7 +195,7 @@ private protocol CoreDelegate: class {
 }
 
 private final class _Player: NSObject {
-    private let core = AVQueuePlayer()
+    private let core: AVQueuePlayer
     
     weak var delegate: CoreDelegate?
     
@@ -183,7 +203,8 @@ private final class _Player: NSObject {
     
     var items: [AVPlayerItem] { return core.items() }
     
-    override init() {
+    init(core: AVQueuePlayer) {
+        self.core = core
         super.init()
         
         let keyPath = [AVQueuePlayer.KeyPath.currentItem, AVQueuePlayer.KeyPath.currentItem]

@@ -11,25 +11,30 @@ import AVFoundation
 import RxSwift
 
 
-open class PlayerItem {
+open class PlayerItem: Hashable {
     public enum State {
         case waiting, prepareForRequest, requesting, readyForPlay, nowPlaying, rejected
     }
     
-    var state: State { return _state.value }
-    
     let _state: Variable<State>
+    var state: State {
+        set { _state.value = newValue }
+        get { return _state.value }
+    }
+    
+    private let uuid = UUID()
+    
+    public var hashValue: Int { return uuid.hashValue }
     
     var isObserved: Bool = false
     
-    var avPlayerItem: AVPlayerItem?
+    open var avPlayerItem: AVPlayerItem?
     
     public init(state: State = .waiting) {
         _state = Variable(state)
     }
     
-    
-    open func fetch(_ completion: (_ done: Bool) -> Void) {
-        fatalError()
+    public static func == (lhs: PlayerItem, rhs: PlayerItem) -> Bool {
+        return lhs.uuid == rhs.uuid
     }
 }
