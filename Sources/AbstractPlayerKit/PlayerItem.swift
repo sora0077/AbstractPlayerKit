@@ -11,21 +11,19 @@ import AVFoundation
 import RxSwift
 
 
-open class PlayerItem: Hashable {
+open class PlayerItem {
     
     public enum State {
         case waiting, prepareForRequest, requesting, readyForPlay, nowPlaying, rejected
     }
+    
+    fileprivate let uuid = UUID()
     
     let _state: Variable<State>
     open var state: State {
         set { _state.value = newValue }
         get { return _state.value }
     }
-    
-    private let uuid = UUID()
-    
-    public var hashValue: Int { return uuid.hashValue }
     
     var isObserved: Bool = false
     
@@ -35,11 +33,15 @@ open class PlayerItem: Hashable {
         _state = Variable(state)
     }
     
-    public static func == (lhs: PlayerItem, rhs: PlayerItem) -> Bool {
-        return lhs.uuid == rhs.uuid
-    }
-    
     open func generateAVPlayerItem(_ completion: (AVPlayerItem?) -> Void) {
         fatalError()
+    }
+}
+
+extension PlayerItem: Hashable {
+    public var hashValue: Int { return uuid.hashValue }
+    
+    public static func == (lhs: PlayerItem, rhs: PlayerItem) -> Bool {
+        return lhs.uuid == rhs.uuid
     }
 }
