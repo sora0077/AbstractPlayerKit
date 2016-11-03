@@ -14,7 +14,7 @@ import RxSwift
 open class PlayerItem {
     
     public enum State {
-        case prepareForRequest, requesting, readyForPlay, nowPlaying, waiting, rejected
+        case prepareForRequest, requesting, readyForPlay(isRequestFinished: Bool), nowPlaying, waiting, rejected
     }
     
     fileprivate let uuid = UUID()
@@ -24,8 +24,6 @@ open class PlayerItem {
         set { _state.value = newValue }
         get { return _state.value }
     }
-    
-    open var isRequestFinished: Bool = false
     
     var isObserved: Bool = false
     
@@ -45,5 +43,22 @@ extension PlayerItem: Hashable {
     
     public static func == (lhs: PlayerItem, rhs: PlayerItem) -> Bool {
         return lhs.uuid == rhs.uuid
+    }
+}
+
+extension PlayerItem.State: Equatable {
+    public static func == (lhs: PlayerItem.State, rhs: PlayerItem.State) -> Bool {
+        switch (lhs, rhs) {
+        case (.prepareForRequest, .prepareForRequest),
+             (.requesting, .requesting),
+             (.nowPlaying, .nowPlaying),
+             (.waiting, .waiting),
+             (.rejected, .rejected):
+            return true
+        case (.readyForPlay(let lhs), .readyForPlay(let rhs)):
+            return lhs == rhs
+        default:
+            return false
+        }
     }
 }

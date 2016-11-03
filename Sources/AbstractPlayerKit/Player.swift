@@ -57,11 +57,7 @@ public final class Player<Item: PlayerItem> {
     
     fileprivate var requesting: ArraySlice<Item> = [] {
         didSet {
-            for item in requesting {
-                if item.state == .prepareForRequest {
-                    item.state = .requesting
-                }
-            }
+            updateRequestQueue()
         }
     }
     
@@ -76,11 +72,11 @@ public final class Player<Item: PlayerItem> {
     private func update(_ item: Item, in state: Item.State) {
         switch state {
         case .prepareForRequest:
-            updateRequestQueue()
-        case .readyForPlay:
-            if let index = requesting.index(of: item), item.isRequestFinished {
+            insertRequestingIfNeeded()
+        case .readyForPlay(let isRequestFinished):
+            if let index = requesting.index(of: item), isRequestFinished {
                 requesting.remove(at: index)
-                updateRequestQueue()
+                insertRequestingIfNeeded()
             }
             updateNowPlaying()
         case .rejected:
@@ -89,7 +85,7 @@ public final class Player<Item: PlayerItem> {
             }
             if let index = requesting.index(of: item) {
                 requesting.remove(at: index)
-                updateRequestQueue()
+                insertRequestingIfNeeded()
             }
         case .waiting:()
         case .requesting:()
@@ -97,16 +93,26 @@ public final class Player<Item: PlayerItem> {
         }
     }
     
-    private func updateRequestQueue() {
+    private func insertRequestingIfNeeded() {
         if requestLimit > requesting.count {
             requesting = requesting + items.lazy
                 .filter { $0.state == .prepareForRequest }
                 .prefix(requestLimit - requesting.count)
+        } else {
+            updateRequestQueue()
+        }
+    }
+    
+    private func updateRequestQueue() {
+        for item in requesting {
+            if item.state == .prepareForRequest {
+                item.state = .requesting
+            }
         }
     }
     
     private func updateNowPlaying() {
-        guard let item = items.first, item.state == .readyForPlay else {
+        guard let item = items.first, case .readyForPlay = item.state else {
             return
         }
         item.state = .nowPlaying
