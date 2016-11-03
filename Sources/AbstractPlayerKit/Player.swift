@@ -114,8 +114,6 @@ public final class Player<Item: PlayerItem> {
         }
         item.state = .nowPlaying
         item.generateAVPlayerItem { [weak self, weak item=item] avPlayerItem in
-            guard let avPlayerItem = avPlayerItem else { return }
-            
             item?.avPlayerItem = avPlayerItem
             self?.core.insert(avPlayerItem, after: nil)
         }

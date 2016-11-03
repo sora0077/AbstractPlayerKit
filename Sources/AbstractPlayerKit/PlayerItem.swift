@@ -33,7 +33,7 @@ open class PlayerItem {
         _state = Variable(state)
     }
     
-    open func generateAVPlayerItem(_ completion: (AVPlayerItem?) -> Void) {
+    open func generateAVPlayerItem(_ completion: @escaping (AVPlayerItem) -> Void) {
         fatalError()
     }
 }
