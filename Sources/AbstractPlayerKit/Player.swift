@@ -57,10 +57,7 @@ public final class Player<Item: PlayerItem> {
     
     fileprivate var requesting: ArraySlice<Item> = [] {
         didSet {
-            for item in Set(requesting).subtracting(oldValue) {
-                if item.state == .waiting {
-                    item.state = .prepareForRequest
-                }
+            for item in requesting {
                 if item.state == .prepareForRequest {
                     item.state = .requesting
                 }
@@ -81,7 +78,7 @@ public final class Player<Item: PlayerItem> {
         case .prepareForRequest:
             updateRequestQueue()
         case .readyForPlay:
-            if let index = requesting.index(of: item) {
+            if let index = requesting.index(of: item), item.isRequestFinished {
                 requesting.remove(at: index)
                 updateRequestQueue()
             }
@@ -103,7 +100,7 @@ public final class Player<Item: PlayerItem> {
     private func updateRequestQueue() {
         if requestLimit > requesting.count {
             requesting = requesting + items.lazy
-                .filter { $0.state == .waiting }
+                .filter { $0.state == .prepareForRequest }
                 .prefix(requestLimit - requesting.count)
         }
     }
@@ -140,7 +137,7 @@ public extension Player {
     }
     
     func insert(_ item: Item, after afterItem: Item?) {
-        if let index = items.index(of: item) {
+        if let afterItem = afterItem, let index = items.index(of: afterItem) {
             items.insert(item, at: index + 1)
         } else {
             items.append(item)

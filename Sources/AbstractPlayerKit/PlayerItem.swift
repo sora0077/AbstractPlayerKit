@@ -14,7 +14,7 @@ import RxSwift
 open class PlayerItem {
     
     public enum State {
-        case waiting, prepareForRequest, requesting, readyForPlay, nowPlaying, rejected
+        case prepareForRequest, requesting, readyForPlay, nowPlaying, waiting, rejected
     }
     
     fileprivate let uuid = UUID()
@@ -25,11 +25,13 @@ open class PlayerItem {
         get { return _state.value }
     }
     
+    open var isRequestFinished: Bool = false
+    
     var isObserved: Bool = false
     
     var avPlayerItem: AVPlayerItem?
     
-    public init(state: State = .waiting) {
+    public init(state: State = .prepareForRequest) {
         _state = Variable(state)
     }
     
