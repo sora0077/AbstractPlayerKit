@@ -11,11 +11,11 @@ import AVFoundation
 import RxSwift
 
 
+public enum State {
+    case prepareForRequest, requesting, readyForPlay(isRequestFinished: Bool), nextPlaying, nowPlaying, waiting, rejected
+}
+
 open class PlayerItem {
-    
-    public enum State {
-        case prepareForRequest, requesting, readyForPlay(isRequestFinished: Bool), nowPlaying, waiting, rejected
-    }
     
     fileprivate let uuid = UUID()
     
@@ -27,10 +27,14 @@ open class PlayerItem {
     
     var isObserved: Bool = false
     
-    var avPlayerItem: AVPlayerItem?
+    var items: [AVPlayerItem] = []
     
     public init(state: State = .prepareForRequest) {
         _state = Variable(state)
+    }
+    
+    func worker() -> AnyWorker<AVPlayerItem> {
+        fatalError()
     }
     
     open func generateAVPlayerItem(_ completion: @escaping (AVPlayerItem) -> Void) {
@@ -46,8 +50,8 @@ extension PlayerItem: Hashable {
     }
 }
 
-extension PlayerItem.State: Equatable {
-    public static func == (lhs: PlayerItem.State, rhs: PlayerItem.State) -> Bool {
+extension State: Equatable {
+    public static func == (lhs: State, rhs: State) -> Bool {
         switch (lhs, rhs) {
         case (.prepareForRequest, .prepareForRequest),
              (.requesting, .requesting),

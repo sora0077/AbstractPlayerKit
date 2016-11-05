@@ -49,24 +49,24 @@ private final class _AnyWorker<W: Worker>: _AnyWorkerBase<W.Response> {
     }
 }
 
-final class AnyWorker<R>: Worker, Equatable {
-    typealias Response = R
+public final class AnyWorker<R>: Worker, Equatable {
+    public typealias Response = R
     
     private let id: Int = assignUniqueId()
     private let base: _AnyWorkerBase<Response>
     
     var state: WorkerState = .waiting
     
-    init<W: Worker>(_ worker: W) where W.Response == R {
+    public init<W: Worker>(_ worker: W) where W.Response == R {
         base = _AnyWorker(base: worker)
     }
     
-    static func == <T>(lhs: AnyWorker<T>, rhs: AnyWorker<T>) -> Bool {
+    public static func == <T>(lhs: AnyWorker<T>, rhs: AnyWorker<T>) -> Bool {
         return lhs.id == rhs.id
     }
     
-    var canPop: Bool { return base.canPop }
-    func run() -> Observable<Response?> {
+    public var canPop: Bool { return base.canPop }
+    public func run() -> Observable<Response?> {
         return base.run()
     }
 }
