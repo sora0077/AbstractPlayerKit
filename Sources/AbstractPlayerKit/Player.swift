@@ -14,7 +14,7 @@ import RxCocoa
 
 public final class Player: NSObject {
     
-    private let core: AVQueuePlayer
+    fileprivate let core: AVQueuePlayer
     
     public fileprivate(set) var nowPlayingItems: [PlayerItem] = [] {
         didSet {
@@ -192,5 +192,15 @@ extension Player {
         } else {
             items.append(item)
         }
+    }
+    
+    public func advanceToNextItem() {
+        core.advanceToNextItem()
+    }
+    
+    public func removeAll() {
+        core.removeAllItems()
+        nowPlayingItems.removeAll()
+        items.removeAll()
     }
 }
