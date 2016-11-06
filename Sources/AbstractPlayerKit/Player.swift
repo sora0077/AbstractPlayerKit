@@ -203,4 +203,12 @@ extension Player {
         nowPlayingItems.removeAll()
         items.removeAll()
     }
+    
+    public func play() {
+        core.play()
+    }
+    
+    public func pause() {
+        core.pause()
+    }
 }
