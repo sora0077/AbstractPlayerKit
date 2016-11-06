@@ -89,10 +89,10 @@ public final class Player {
     }
     
     private func updatePlayerItem() {
-        func update(to items: [PlayerItem]) {
+        func update(to items: [PlayerItem]) -> Bool {
             for item in items {
                 guard !item.playerItems.isEmpty else {
-                    return
+                    return false
                 }
                 func avPlayerItem() -> (Int, AVPlayerItem)? {
                     return item.playerItems.lazy
@@ -107,13 +107,15 @@ public final class Player {
                         }.first
                 }
                 
-                guard let (index, avPlayerItem) = avPlayerItem() else { return }
+                guard let (index, avPlayerItem) = avPlayerItem() else { return false }
                 item.playerItems[index] = .readyToPlay(avPlayerItem)
+                return true
             }
+            return false
         }
-        
-        update(to: nowPlayingItems)
-        update(to: items)
+        if update(to: nowPlayingItems) || update(to: items) {
+            playIfNeeded()
+        }
     }
     
     private func playIfNeeded() {
