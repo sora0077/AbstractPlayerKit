@@ -30,6 +30,17 @@ public final class Player: NSObject {
     
     private var requesting: Set<PlayerItem> = []
     
+    private var readyToPlayItemsCount: Int {
+        return (nowPlayingItems + items).flatMap { $0.playerItems }.filter {
+            switch $0 {
+            case .readyToPlay:
+                return true
+            default:
+                return false
+            }
+            }.count
+    }
+    
     private let disposeBag = DisposeBag()
     
     public init(queuePlayer: AVQueuePlayer = AVQueuePlayer()) {
@@ -51,15 +62,20 @@ public final class Player: NSObject {
             core.play()
         case #keyPath(AVQueuePlayer.currentItem):
             updateNowPlayingItem(currentItem: core.currentItem)
+            if requesting.isEmpty {
+                updateRequesting()
+            }
         default:
             ()
         }
     }
     
     private func updateRequesting() {
+        let prefix = 3 + 1 - requesting.count - readyToPlayItemsCount
+        guard prefix > 0 else { return }
         let newRequesting = (nowPlayingItems + items).lazy
             .filter { $0.state == .prepareForRequest }
-            .prefix(3 - self.requesting.count)
+            .prefix(prefix)
         self.requesting.formUnion(Set(newRequesting))
         Observable.from(newRequesting)
             .do(onNext: { $0.state = .requesting })
