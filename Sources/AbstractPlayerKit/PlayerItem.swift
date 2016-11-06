@@ -11,30 +11,39 @@ import AVFoundation
 import RxSwift
 
 
-public enum State {
-    case prepareForRequest, requesting, readyForPlay(isRequestFinished: Bool), nextPlaying, nowPlaying, waiting, rejected
-}
 
 open class PlayerItem {
     
+    public enum RequestState {
+        case prepareForRequest, requesting, done
+    }
+    
+    enum Item {
+        case waiting(AVPlayerItem), readyToPlay(AVPlayerItem), nowPlaying(AVPlayerItem), didFinishPlaying(AVPlayerItem)
+    }
+    
     fileprivate let uuid = UUID()
     
-    let _state: Variable<State>
-    open var state: State {
+    private let _state: Variable<RequestState>
+    open internal(set) var state: RequestState {
         set { _state.value = newValue }
         get { return _state.value }
     }
     
     var isObserved: Bool = false
     
-    var items: [AVPlayerItem] = []
+    var playerItems: ArraySlice<Item> = []
     
-    public init(state: State = .prepareForRequest) {
+    public init(state: RequestState = .prepareForRequest) {
         _state = Variable(state)
     }
     
-    func worker() -> AnyWorker<AVPlayerItem> {
+    open func fetcher() -> Observable<AVPlayerItem?> {
         fatalError()
+    }
+    
+    open func didFinishRequest() -> RequestState {
+        return .done
     }
     
     open func generateAVPlayerItem(_ completion: @escaping (AVPlayerItem) -> Void) {
@@ -47,22 +56,5 @@ extension PlayerItem: Hashable {
     
     public static func == (lhs: PlayerItem, rhs: PlayerItem) -> Bool {
         return lhs.uuid == rhs.uuid
-    }
-}
-
-extension State: Equatable {
-    public static func == (lhs: State, rhs: State) -> Bool {
-        switch (lhs, rhs) {
-        case (.prepareForRequest, .prepareForRequest),
-             (.requesting, .requesting),
-             (.nowPlaying, .nowPlaying),
-             (.waiting, .waiting),
-             (.rejected, .rejected):
-            return true
-        case (.readyForPlay(let lhs), .readyForPlay(let rhs)):
-            return lhs == rhs
-        default:
-            return false
-        }
     }
 }

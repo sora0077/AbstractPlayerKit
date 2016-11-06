@@ -52,7 +52,7 @@ private final class _AnyWorker<W: Worker>: _AnyWorkerBase<W.Response> {
 public final class AnyWorker<R>: Worker, Equatable {
     public typealias Response = R
     
-    private let id: Int = assignUniqueId()
+    private let id: Int = Unique.assign()
     private let base: _AnyWorkerBase<Response>
     
     var state: WorkerState = .waiting
@@ -71,10 +71,14 @@ public final class AnyWorker<R>: Worker, Equatable {
     }
 }
 
-private var uniqueIdSeed: Int = 0
-private func assignUniqueId() -> Int {
-    defer {
-        uniqueIdSeed += 1
+private struct Unique {
+    private static var seed: Int = 0
+    
+    static func assign() -> Int {
+        defer {
+            seed += 1
+        }
+        return seed
     }
-    return uniqueIdSeed
+    private init() {}
 }
