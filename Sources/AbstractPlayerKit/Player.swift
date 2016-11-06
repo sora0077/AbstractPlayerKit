@@ -12,22 +12,8 @@ import RxSwift
 import RxCocoa
 
 
-private func partial<A, B, R>(_ f: @escaping (A, B) -> R, _ val: @escaping @autoclosure () -> A) -> (B) -> R {
-    return { f(val(), $0) }
-}
-
-
-private func partial<A, B, C, D, R>(
-    _ f: @escaping (A, B, C, D) -> R,
-    _ a: @escaping @autoclosure () -> A,
-    _ c: @escaping @autoclosure () -> C,
-    _ d: @escaping @autoclosure () -> D
-    ) -> (B) -> R {
-    return { f(a(), $0, c(), d()) }
-}
-
-public final class Player {
-
+public final class Player: NSObject {
+    
     private let core: AVQueuePlayer
     
     public fileprivate(set) var nowPlayingItems: [PlayerItem] = [] {
@@ -48,18 +34,26 @@ public final class Player {
     
     public init(queuePlayer: AVQueuePlayer = AVQueuePlayer()) {
         core = queuePlayer
-        core.rx.observeWeakly(AVPlayerStatus.self, #keyPath(AVQueuePlayer.status))
-            .subscribe(onNext: { [weak self] status in
-                if status == .readyToPlay {
-                    self?.core.play()
-                }
-            })
-            .addDisposableTo(disposeBag)
-        core.rx.observeWeakly(AVPlayerItem.self, #keyPath(AVQueuePlayer.currentItem))
-            .subscribe(onNext: { [weak self] currentItem in
-                self?.updateNowPlayingItem(currentItem: currentItem)
-            })
-            .addDisposableTo(disposeBag)
+        super.init()
+        core.addObserver(self, forKeyPath: #keyPath(AVQueuePlayer.status), options: .new, context: nil)
+        core.addObserver(self, forKeyPath: #keyPath(AVQueuePlayer.currentItem), options: .new, context: nil)
+    }
+    
+    deinit {
+        core.removeObserver(self, forKeyPath: #keyPath(AVQueuePlayer.status))
+        core.removeObserver(self, forKeyPath: #keyPath(AVQueuePlayer.currentItem))
+    }
+    
+    public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard let keyPath = keyPath else { return }
+        switch keyPath {
+        case #keyPath(AVQueuePlayer.status) where core.status == .readyToPlay:
+            core.play()
+        case #keyPath(AVQueuePlayer.currentItem):
+            updateNowPlayingItem(currentItem: core.currentItem)
+        default:
+            ()
+        }
     }
     
     private func updateRequesting() {
@@ -92,11 +86,17 @@ public final class Player {
         func update(to items: [PlayerItem]) -> Bool {
             for item in items {
                 guard !item.playerItems.isEmpty else {
-                    return false
+                    continue
                 }
                 func avPlayerItem() -> (Int, AVPlayerItem)? {
                     return item.playerItems.lazy
                         .enumerated()
+                        .filter {
+                            if case .waiting = $1 {
+                                return true
+                            }
+                            return false
+                        }
                         .flatMap { (index, playerItem) in
                             switch playerItem {
                             case .waiting(let avPlayerItem):
@@ -107,7 +107,7 @@ public final class Player {
                         }.first
                 }
                 
-                guard let (index, avPlayerItem) = avPlayerItem() else { return false }
+                guard let (index, avPlayerItem) = avPlayerItem() else { continue }
                 item.playerItems[index] = .readyToPlay(avPlayerItem)
                 return true
             }
@@ -158,9 +158,8 @@ public final class Player {
             }
             return false
         }
-        guard update(from: nowPlayingItems) || update(from: items) else {
+        if !(update(from: nowPlayingItems) || update(from: items)) {
             playIfNeeded()
-            return
         }
     }
 }
