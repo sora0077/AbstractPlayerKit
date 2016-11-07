@@ -32,7 +32,7 @@ open class PlayerItem {
     
     var isObserved: Bool = false
     
-    public internal(set) var playerItems: [ItemState] = []
+    public internal(set) var items: [ItemState] = []
     
     public init(state: RequestState = .prepareForRequest) {
         _state = Variable(state)

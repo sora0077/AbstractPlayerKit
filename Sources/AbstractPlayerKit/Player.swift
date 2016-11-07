@@ -40,7 +40,7 @@ public final class Player: NSObject {
     private var requesting: Set<PlayerItem> = []
     
     private var readyToPlayItemsCount: Int {
-        return (priorityHighItems + priorityLowItems).flatMap { $0.playerItems }.filter {
+        return (priorityHighItems + priorityLowItems).flatMap { $0.items }.filter {
             switch $0 {
             case .readyToPlay:
                 return true
@@ -100,7 +100,7 @@ public final class Player: NSObject {
                 }
                 _ = self.requesting.remove(item)
                 if let avPlayerItem = avPlayerItem {
-                    item.playerItems.append(.waiting(avPlayerItem))
+                    item.items.append(.waiting(avPlayerItem))
                 }
             })
             .addDisposableTo(disposeBag)
@@ -109,11 +109,11 @@ public final class Player: NSObject {
     private func updatePlayerItem() {
         func update(to items: [PlayerItem]) -> Bool {
             for item in items {
-                guard !item.playerItems.isEmpty else {
+                guard !item.items.isEmpty else {
                     continue
                 }
                 func avPlayerItem() -> (Int, AVPlayerItem)? {
-                    return item.playerItems.lazy
+                    return item.items.lazy
                         .enumerated()
                         .filter {
                             if case .waiting = $1 {
@@ -132,7 +132,7 @@ public final class Player: NSObject {
                 }
                 
                 guard let (index, avPlayerItem) = avPlayerItem() else { continue }
-                item.playerItems[index] = .readyToPlay(avPlayerItem)
+                item.items[index] = .readyToPlay(avPlayerItem)
                 return true
             }
             return false
@@ -145,14 +145,14 @@ public final class Player: NSObject {
     private func playIfNeeded() {
         func play(from items: [PlayerItem]) -> Bool {
             for item in items {
-                for (index, playerItem) in item.playerItems.enumerated() {
+                for (index, playerItem) in item.items.enumerated() {
                     if case .nowPlaying = playerItem { return true }
                     if case .readyToPlay(let avPlayerItem) = playerItem {
                         core.insert(avPlayerItem, after: nil)
                         if core.status == .readyToPlay {
                             core.play()
                         }
-                        item.playerItems[index] = .nowPlaying(avPlayerItem)
+                        item.items[index] = .nowPlaying(avPlayerItem)
                         return true
                     }
                 }
@@ -165,20 +165,20 @@ public final class Player: NSObject {
     private func updateNowPlayingItem(currentItem: AVPlayerItem?) {
         func update(from items: [PlayerItem]) -> Bool {
             for item in items {
-                for (index, playerItem) in item.playerItems.enumerated() {
+                for (index, playerItem) in item.items.enumerated() {
                     if let currentItem = currentItem {
                         switch playerItem {
                         case .nowPlaying(let avPlayerItem) where currentItem != avPlayerItem:
-                            item.playerItems[index] = .didFinishPlaying(avPlayerItem)
+                            item.items[index] = .didFinishPlaying(avPlayerItem)
                         case .readyToPlay(let avPlayerItem) where currentItem == avPlayerItem:
-                            item.playerItems[index] = .nowPlaying(avPlayerItem)
+                            item.items[index] = .nowPlaying(avPlayerItem)
                             return true
                         default:
                             continue
                         }
                     } else {
                         if case .nowPlaying(let avPlayerItem) = playerItem {
-                            item.playerItems[index] = .didFinishPlaying(avPlayerItem)
+                            item.items[index] = .didFinishPlaying(avPlayerItem)
                         }
                     }
                 }
