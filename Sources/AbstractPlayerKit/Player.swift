@@ -161,7 +161,15 @@ public final class Player: NSObject {
             }
             return false
         }
-        _ = play(from: priorityHighItems) || play(from: priorityLowItems)
+        let alreadyHasNowPlaying = priorityLowItems.contains(where: {
+            for item in $0.items {
+                if case .nowPlaying = item {
+                    return true
+                }
+            }
+            return false
+        })
+        _ = (!alreadyHasNowPlaying && play(from: priorityHighItems)) || play(from: priorityLowItems)
         _priorityHighItems.value = priorityHighItems
         _priorityLowItems.value = priorityLowItems
     }
