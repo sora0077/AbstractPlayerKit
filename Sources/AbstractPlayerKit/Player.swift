@@ -16,17 +16,26 @@ public final class Player: NSObject {
     
     fileprivate let core: AVQueuePlayer
     
+    private let _priorityHighItems = Variable<[PlayerItem]>([])
     public fileprivate(set) var priorityHighItems: [PlayerItem] = [] {
         didSet {
             updateRequesting()
+            _priorityHighItems.value = priorityHighItems
         }
     }
     
+    private let _priorityLowItems = Variable<[PlayerItem]>([])
     public fileprivate(set) var priorityLowItems: [PlayerItem] = [] {
         didSet {
             updateRequesting()
+            _priorityLowItems.value = priorityLowItems
         }
     }
+    
+    public private(set) lazy var items: Observable<[PlayerItem]> = Observable
+        .combineLatest(self._priorityHighItems.asObservable(), self._priorityLowItems.asObservable()) {
+            $0 + $1
+        }
     
     private var requesting: Set<PlayerItem> = []
     

@@ -18,7 +18,7 @@ open class PlayerItem {
         case prepareForRequest, requesting, done
     }
     
-    enum Item {
+    public enum ItemState {
         case waiting(AVPlayerItem), readyToPlay(AVPlayerItem), nowPlaying(AVPlayerItem), didFinishPlaying(AVPlayerItem)
     }
     
@@ -32,7 +32,7 @@ open class PlayerItem {
     
     var isObserved: Bool = false
     
-    var playerItems: ArraySlice<Item> = []
+    public internal(set) var playerItems: [ItemState] = []
     
     public init(state: RequestState = .prepareForRequest) {
         _state = Variable(state)
