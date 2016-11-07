@@ -138,6 +138,8 @@ public final class Player: NSObject {
             return false
         }
         if update(to: priorityHighItems) || update(to: priorityLowItems) {
+            _priorityHighItems.value = priorityHighItems
+            _priorityLowItems.value = priorityLowItems
             playIfNeeded()
         }
     }
@@ -160,6 +162,8 @@ public final class Player: NSObject {
             return false
         }
         _ = play(from: priorityHighItems) || play(from: priorityLowItems)
+        _priorityHighItems.value = priorityHighItems
+        _priorityLowItems.value = priorityLowItems
     }
     
     private func updateNowPlayingItem(currentItem: AVPlayerItem?) {
@@ -186,6 +190,8 @@ public final class Player: NSObject {
             return false
         }
         if !(update(from: priorityHighItems) || update(from: priorityLowItems)) {
+            _priorityHighItems.value = priorityHighItems
+            _priorityLowItems.value = priorityLowItems
             playIfNeeded()
         }
     }
