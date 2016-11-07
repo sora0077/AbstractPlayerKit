@@ -16,13 +16,13 @@ public final class Player: NSObject {
     
     fileprivate let core: AVQueuePlayer
     
-    public fileprivate(set) var nowPlayingItems: [PlayerItem] = [] {
+    public fileprivate(set) var priorityHighItems: [PlayerItem] = [] {
         didSet {
             updateRequesting()
         }
     }
     
-    public fileprivate(set) var items: [PlayerItem] = [] {
+    public fileprivate(set) var priorityLowItems: [PlayerItem] = [] {
         didSet {
             updateRequesting()
         }
@@ -31,7 +31,7 @@ public final class Player: NSObject {
     private var requesting: Set<PlayerItem> = []
     
     private var readyToPlayItemsCount: Int {
-        return (nowPlayingItems + items).flatMap { $0.playerItems }.filter {
+        return (priorityHighItems + priorityLowItems).flatMap { $0.playerItems }.filter {
             switch $0 {
             case .readyToPlay:
                 return true
@@ -65,15 +65,14 @@ public final class Player: NSObject {
             if requesting.isEmpty {
                 updateRequesting()
             }
-        default:
-            ()
+        default:()
         }
     }
     
     private func updateRequesting() {
         let prefix = 3 + 1 - requesting.count - readyToPlayItemsCount
         guard prefix > 0 else { return }
-        let newRequesting = (nowPlayingItems + items).lazy
+        let newRequesting = (priorityHighItems + priorityLowItems).lazy
             .filter { $0.state == .prepareForRequest }
             .prefix(prefix)
         self.requesting.formUnion(Set(newRequesting))
@@ -129,7 +128,7 @@ public final class Player: NSObject {
             }
             return false
         }
-        if update(to: nowPlayingItems) || update(to: items) {
+        if update(to: priorityHighItems) || update(to: priorityLowItems) {
             playIfNeeded()
         }
     }
@@ -141,6 +140,9 @@ public final class Player: NSObject {
                     if case .nowPlaying = playerItem { return true }
                     if case .readyToPlay(let avPlayerItem) = playerItem {
                         core.insert(avPlayerItem, after: nil)
+                        if core.status == .readyToPlay {
+                            core.play()
+                        }
                         item.playerItems[index] = .nowPlaying(avPlayerItem)
                         return true
                     }
@@ -148,7 +150,7 @@ public final class Player: NSObject {
             }
             return false
         }
-        _ = play(from: nowPlayingItems) || play(from: items)
+        _ = play(from: priorityHighItems) || play(from: priorityLowItems)
     }
     
     private func updateNowPlayingItem(currentItem: AVPlayerItem?) {
@@ -174,7 +176,7 @@ public final class Player: NSObject {
             }
             return false
         }
-        if !(update(from: nowPlayingItems) || update(from: items)) {
+        if !(update(from: priorityHighItems) || update(from: priorityLowItems)) {
             playIfNeeded()
         }
     }
@@ -182,15 +184,15 @@ public final class Player: NSObject {
 
 
 extension Player {
-    public func insert(_ item: PlayerItem) {
-        nowPlayingItems.append(item)
+    public func insert(inPriorityHigh item: PlayerItem) {
+        priorityHighItems.append(item)
     }
     
     public func insert(_ item: PlayerItem, after afterItem: PlayerItem?) {
-        if let afterItem = afterItem, let index = items.index(of: afterItem) {
-            items.insert(item, at: index + 1)
+        if let afterItem = afterItem, let index = priorityLowItems.index(of: afterItem) {
+            priorityLowItems.insert(item, at: index + 1)
         } else {
-            items.append(item)
+            priorityLowItems.append(item)
         }
     }
     
@@ -200,8 +202,8 @@ extension Player {
     
     public func removeAll() {
         core.removeAllItems()
-        nowPlayingItems.removeAll()
-        items.removeAll()
+        priorityHighItems.removeAll()
+        priorityLowItems.removeAll()
     }
     
     public func play() {
