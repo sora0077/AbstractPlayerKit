@@ -47,7 +47,7 @@ public final class Player: NSObject {
             default:
                 return false
             }
-            }.count
+        }.count
     }
     
     private let disposeBag = DisposeBag()
@@ -145,12 +145,12 @@ public final class Player: NSObject {
     }
     
     private func playIfNeeded() {
-        func play(from items: [PlayerItem]) -> Bool {
+        func play(from items: [PlayerItem], insertFirst: Bool = false) -> Bool {
             for item in items {
                 for (index, playerItem) in item.items.enumerated() {
                     if case .nowPlaying = playerItem { return true }
                     if case .readyToPlay(let avPlayerItem) = playerItem {
-                        core.insert(avPlayerItem, after: nil)
+                        core.insert(avPlayerItem, after: insertFirst ? core.items().first : nil)
                         if core.status == .readyToPlay {
                             core.play()
                         }
@@ -169,7 +169,7 @@ public final class Player: NSObject {
             }
             return false
         })
-        _ = (!alreadyHasNowPlaying && play(from: priorityHighItems)) || play(from: priorityLowItems)
+        _ = (!alreadyHasNowPlaying && play(from: priorityHighItems, insertFirst: true)) || play(from: priorityLowItems)
         _priorityHighItems.value = priorityHighItems
         _priorityLowItems.value = priorityLowItems
     }

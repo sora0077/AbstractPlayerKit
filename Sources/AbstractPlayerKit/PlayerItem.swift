@@ -45,10 +45,6 @@ open class PlayerItem {
     open func didFinishRequest() -> RequestState {
         return .done
     }
-    
-    open func generateAVPlayerItem(_ completion: @escaping (AVPlayerItem) -> Void) {
-        fatalError()
-    }
 }
 
 extension PlayerItem: Hashable {
