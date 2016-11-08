@@ -19,7 +19,7 @@ open class PlayerItem {
     }
     
     public enum ItemState {
-        case waiting(AVPlayerItem), readyToPlay(AVPlayerItem), nowPlaying(AVPlayerItem), didFinishPlaying(AVPlayerItem)
+        case waiting(AVPlayerItem), readyToPlay(AVPlayerItem), nowPlaying(AVPlayerItem), didFinishPlaying
     }
     
     fileprivate let uuid = UUID()

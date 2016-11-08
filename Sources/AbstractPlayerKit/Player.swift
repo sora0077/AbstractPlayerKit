@@ -181,7 +181,7 @@ public final class Player: NSObject {
                     if let currentItem = currentItem {
                         switch playerItem {
                         case .nowPlaying(let avPlayerItem) where currentItem != avPlayerItem:
-                            item.items[index] = .didFinishPlaying(avPlayerItem)
+                            item.items[index] = .didFinishPlaying
                         case .readyToPlay(let avPlayerItem) where currentItem == avPlayerItem:
                             item.items[index] = .nowPlaying(avPlayerItem)
                             return true
@@ -189,8 +189,8 @@ public final class Player: NSObject {
                             continue
                         }
                     } else {
-                        if case .nowPlaying(let avPlayerItem) = playerItem {
-                            item.items[index] = .didFinishPlaying(avPlayerItem)
+                        if case .nowPlaying = playerItem {
+                            item.items[index] = .didFinishPlaying
                         }
                     }
                 }
