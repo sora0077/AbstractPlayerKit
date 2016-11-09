@@ -42,14 +42,17 @@ public final class Player: NSObject {
     fileprivate var requesting: Set<PlayerItem> = []
     
     private var readyToPlayItemsCount: Int {
-        return (priorityHighItems + priorityLowItems).flatMap { $0.items }.filter {
-            switch $0 {
-            case .readyToPlay:
-                return true
-            default:
-                return false
-            }
-        }.count
+        func count(_ items: [PlayerItem]) -> Int {
+            return items.flatMap { $0.items }.filter {
+                switch $0 {
+                case .readyToPlay:
+                    return true
+                default:
+                    return false
+                }
+                }.count
+        }
+        return count(priorityHighItems) + count(priorityLowItems)
     }
     
     private let disposeBag = DisposeBag()

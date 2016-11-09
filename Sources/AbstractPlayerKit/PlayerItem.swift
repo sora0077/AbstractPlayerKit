@@ -30,8 +30,6 @@ open class PlayerItem {
         get { return _state.value }
     }
     
-    var isObserved: Bool = false
-    
     public internal(set) var items: [ItemState] = []
     
     public init(state: RequestState = .prepareForRequest) {
