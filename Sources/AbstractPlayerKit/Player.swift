@@ -16,6 +16,8 @@ public final class Player: NSObject {
     
     fileprivate let core: AVQueuePlayer
     
+    public var playing: Bool { return core.rate != 0 }
+    
     private let _priorityHighItems = Variable<[PlayerItem]>([])
     public fileprivate(set) var priorityHighItems: [PlayerItem] = [] {
         didSet {
@@ -37,7 +39,7 @@ public final class Player: NSObject {
             $0 + $1
         }
     
-    private var requesting: Set<PlayerItem> = []
+    fileprivate var requesting: Set<PlayerItem> = []
     
     private var readyToPlayItemsCount: Int {
         return (priorityHighItems + priorityLowItems).flatMap { $0.items }.filter {
@@ -98,8 +100,7 @@ public final class Player: NSObject {
                     self.updatePlayerItem()
                     self.updateRequesting()
                 }
-                _ = self.requesting.remove(item)
-                if let avPlayerItem = avPlayerItem {
+                if self.requesting.remove(item) != nil, let avPlayerItem = avPlayerItem {
                     item.items.append(.waiting(avPlayerItem))
                 }
             })
@@ -223,10 +224,30 @@ extension Player {
         core.advanceToNextItem()
     }
     
-    public func removeAll() {
+    public func removeAllItems() {
         core.removeAllItems()
         priorityHighItems.removeAll()
         priorityLowItems.removeAll()
+    }
+    
+    public func remove(_ item: PlayerItem) {
+        for itemState in item.items {
+            switch itemState {
+            case .waiting(let v):
+                core.remove(v)
+            case .readyToPlay(let v):
+                core.remove(v)
+            case .nowPlaying(let v):
+                core.remove(v)
+            default:()
+            }
+        }
+        if let index = priorityHighItems.index(of: item) {
+            priorityHighItems.remove(at: index)
+        } else if let index = priorityLowItems.index(of: item) {
+            priorityLowItems.remove(at: index)
+        }
+        _ = requesting.remove(item)
     }
     
     public func play() {
