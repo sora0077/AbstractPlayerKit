@@ -83,19 +83,20 @@ public final class Player: NSObject {
         }
     }
     
+    private let serialQueue = SerialDispatchQueueScheduler(qos: .default)
     private func updateRequesting() {
         let prefix = 3 + 1 - requesting.count - readyToPlayItemsCount
         guard prefix > 0 else { return }
         let newRequesting = (priorityHighItems + priorityLowItems).lazy
             .filter { $0.state == .prepareForRequest }
             .prefix(prefix)
-        self.requesting.formUnion(Set(newRequesting))
+        requesting.formUnion(Set(newRequesting))
         Observable.from(newRequesting)
             .do(onNext: { $0.state = .requesting })
             .flatMap { (item: PlayerItem) in
                 item.fetcher().map { [weak item=item] in (item, $0) }
             }
-            .subscribeOn(SerialDispatchQueueScheduler(qos: .default))
+            .subscribeOn(serialQueue)
             .subscribe(onNext: { [weak self] item, avPlayerItem in
                 guard let `self` = self, let item = item else { return }
                 defer {
