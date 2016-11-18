@@ -91,24 +91,26 @@ public final class Player: NSObject {
             .filter { $0.state == .prepareForRequest }
             .prefix(prefix)
         requesting.formUnion(Set(newRequesting))
-        Observable.from(newRequesting)
-            .do(onNext: { $0.state = .requesting })
-            .flatMap { (item: PlayerItem) in
-                item.fetcher().map { [weak item=item] in (item, $0) }
-            }
-            .subscribeOn(serialQueue)
-            .subscribe(onNext: { [weak self] item, avPlayerItem in
-                guard let `self` = self, let item = item else { return }
-                defer {
-                    item.state = item.didFinishRequest()
-                    self.updatePlayerItem()
-                    self.updateRequesting()
+        DispatchQueue.global().async {
+            Observable.from(newRequesting)
+                .do(onNext: { $0.state = .requesting })
+                .flatMap { (item: PlayerItem) in
+                    item.fetcher().map { [weak item=item] in (item, $0) }
                 }
-                if self.requesting.remove(item) != nil, let avPlayerItem = avPlayerItem {
-                    item.items.append(.waiting(avPlayerItem))
-                }
-            })
-            .addDisposableTo(disposeBag)
+                .subscribeOn(self.serialQueue)
+                .subscribe(onNext: { [weak self] item, avPlayerItem in
+                    guard let `self` = self, let item = item else { return }
+                    defer {
+                        item.state = item.didFinishRequest()
+                        self.updatePlayerItem()
+                        self.updateRequesting()
+                    }
+                    if self.requesting.remove(item) != nil, let avPlayerItem = avPlayerItem {
+                        item.items.append(.waiting(avPlayerItem))
+                    }
+                })
+                .addDisposableTo(self.disposeBag)
+        }
     }
     
     private func updatePlayerItem() {
