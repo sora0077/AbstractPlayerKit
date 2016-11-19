@@ -55,7 +55,7 @@ public final class Player: NSObject {
         return count(priorityHighItems) + count(priorityLowItems)
     }
     
-    private let disposeBag = DisposeBag()
+    fileprivate var disposeBag = DisposeBag()
     
     public init(queuePlayer: AVQueuePlayer = AVQueuePlayer()) {
         core = queuePlayer
@@ -234,6 +234,8 @@ extension Player {
         core.removeAllItems()
         priorityHighItems.removeAll()
         priorityLowItems.removeAll()
+        requesting.removeAll()
+        disposeBag = DisposeBag()
     }
     
     public func remove(_ item: PlayerItem) {
